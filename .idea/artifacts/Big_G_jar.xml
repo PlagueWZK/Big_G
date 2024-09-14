@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Big G:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Big_G_jar</output-path>
+    <root id="archive" name="Big G.jar">
+      <element id="module-output" name="Big G" />
+    </root>
+  </artifact>
+</component>
