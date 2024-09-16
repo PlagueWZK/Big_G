@@ -25,8 +25,14 @@ public class WallLine implements Element {
     public double A;
     public double B;
     public double C;
+    public Color color;
+    public Stroke stroke;
 
     public WallLine(double x1, double y1, double x2, double y2) {
+        this(x1, y1, x2, y2, Color.BLACK);
+    }
+
+    public WallLine(double x1, double y1, double x2, double y2, Color color) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -39,14 +45,15 @@ public class WallLine implements Element {
         length = PosUtil.getDistance(x1, y1, x2, y2);
         wallLines.add(this);
         Main.elements.add(this);
+        this.color = color;
     }
 
     public double getDistance(double x, double y) {
         return Math.abs(A * x + B * y + C) / Math.sqrt(A * A + B * B);
     }
-    @Override
-    public boolean isCollision(double x,double y,int r) {
-        return PosUtil.getDistance(x, y, x1, y1) < length + r && PosUtil.getDistance(x, y, x2, y2) < length + r&&getDistance(x, y) < r;
+
+    public boolean isCollision(double x, double y, int r) {
+        return PosUtil.getDistance(x, y, x1, y1) < length + r + 2 && PosUtil.getDistance(x, y, x2, y2) < length + r + 2 && getDistance(x, y) < r + 2;
 
     }
 
@@ -57,15 +64,23 @@ public class WallLine implements Element {
 
     @Override
     public void paint(Graphics2D g) {
-        g.setColor(Color.BLACK);
+        g.setColor(this.color);
+        g.setStroke(new BasicStroke(5));
         g.drawLine(PosUtil.getScreenX(x1), PosUtil.getScreenY(y1), PosUtil.getScreenX(x2), PosUtil.getScreenY(y2));
 
     }
+
     public static void init() {
-        new WallLine(200, 200, 800,200);
-        new WallLine(200,200,200,700);
-        new WallLine(200,700,800,700);
-        new WallLine(800,700,800,500);
-        new WallLine(800,200,800,400);
+        int[][] wall = new int[][]{
+                {200, 200, 800, 200},
+                {200, 200, 200, 700},
+                {200, 700, 800, 700},
+                {800, 700, 800, 500},
+                {800, 200, 800, 400}
+        };
+        for (int[] w : wall) {
+            new WallLine(w[0], w[1], w[2], w[3]);
+        }
+        new WallLine(200, 200, 200, -100, Color.RED);
     }
 }

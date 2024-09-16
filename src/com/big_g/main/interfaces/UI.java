@@ -4,12 +4,11 @@ import java.awt.*;
 
 /**
  * @author PlagueWZK
- * description: Element
- * date: 2024/9/14 17:01
+ * description: UI
+ * date: 2024/9/15 13:32
  */
 
-public interface Element {
-
+public interface UI {
     void paint(Graphics2D g);
     boolean needDel();
 }

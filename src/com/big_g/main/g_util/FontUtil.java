@@ -10,6 +10,6 @@ import java.awt.*;
 
 public abstract class FontUtil {
     public static Font getFont(int size) {
-        return new Font("黑体", Font.PLAIN, size);
+        return new Font("宋体", Font.PLAIN, size);
     }
 }

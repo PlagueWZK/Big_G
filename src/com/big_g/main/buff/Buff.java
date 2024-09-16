@@ -10,7 +10,13 @@ import com.big_g.main.objects.G;
  */
 
 public abstract class Buff {
-    public static final int SPEED_UP = 1;
+
+    public static final String[] buffs = new String[] {
+            "SPEED_UP",
+            "GROW",
+            "ANGRY",
+            "POISON"
+    };
 
     public String name;
     public String description;
@@ -18,8 +24,10 @@ public abstract class Buff {
     public double power;
     public boolean isActive;
     public MilliTimerClock clock;
+    public String ID;
 
-    public Buff(String name, String description, long duration,double power) {
+    public Buff(String ID,String name, String description, long duration,double power) {
+        this.ID = ID;
         this.name = name;
         this.description = description;
         this.duration = duration;

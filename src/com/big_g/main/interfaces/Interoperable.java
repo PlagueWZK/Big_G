@@ -13,4 +13,8 @@ public interface Interoperable {
     boolean isTriggered(double x,double y,int r);
     void interaction(G G);
     boolean needDel();
+
+    boolean isChecked(int x, int y);
+    void active();
+    void disActive();
 }

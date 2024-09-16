@@ -12,7 +12,7 @@ public class Grow extends Buff {
 
 
     public Grow(long duration, double power) {
-        super("巨人化", "可使身体变大", duration, power);
+        super("GROW","巨人化", "可使身体变大", duration, power);
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.big_g.main.objects.G;
 
 public class SpeedUp extends Buff {
     public SpeedUp(long duration, double power) {
-        super("速度提升", "获得速度提升效果,速度 * "+ power, duration, power);
+        super("SPEED_UP","速度提升 *" + power, "获得速度提升效果,速度 * "+ power, duration, power);
     }
     @Override
     public void giveBuff(G g) {

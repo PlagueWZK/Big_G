@@ -4,12 +4,14 @@ import java.awt.*;
 
 /**
  * @author PlagueWZK
- * description: Element
- * date: 2024/9/14 17:01
+ * description: InformationUI
+ * date: 2024/9/16 14:39
  */
 
-public interface Element {
-
+public interface InformationUI extends UI{
+    @Override
     void paint(Graphics2D g);
+
+    @Override
     boolean needDel();
 }

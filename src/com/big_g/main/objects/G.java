@@ -1,13 +1,13 @@
 package com.big_g.main.objects;
 
 import com.big_g.main.Main;
+import com.big_g.main.UI.StateUI;
 import com.big_g.main.buff.Buff;
 import com.big_g.main.clock.MilliTimerClock;
 import com.big_g.main.clock.NanoTimerClock;
 import com.big_g.main.element.WallLine;
-import com.big_g.main.g_util.FontUtil;
-import com.big_g.main.g_util.PosUtil;
 import com.big_g.main.interfaces.Interoperable;
+import com.big_g.main.interfaces.UI;
 import com.big_g.main.static_value.ImageData;
 
 import java.awt.*;
@@ -23,7 +23,9 @@ import java.util.HashSet;
 public class G {
 
     public static final int STANDARD_MOVE_FACTOR = 5000000;
-    public static final int STANDARD_RADIUS = 20;
+    public static final int STANDARD_RADIUS = 30;
+    public static final double STANDARD_HEALTH = 100.0;
+    public static final double STANDARD_NATURAL_REGENERATION = 2.0;
 
     public String name;
     public double x;
@@ -35,17 +37,23 @@ public class G {
     public int mouseX;
     public int mouseY;
     public int state;
+    public double maxHealth;
+    public double showHealth;
+    public double naturalRegeneration;
     public double health;
     public int radius;
     public int size;
     public long moveFactor;
+    public boolean angry;
 
     public NanoTimerClock moveClock;
     public MilliTimerClock flashStateClock;
     public MilliTimerClock updateClock;
+    public MilliTimerClock naturalRegenerationClock;
     public HashSet<Integer> keySets;
     public HashSet<Integer> mouseSets;
     public HashSet<Buff> buffs;
+    public HashSet<UI> UISets;
 
     public KeyListener keyListener;
     public MouseListener mouseListener;
@@ -56,10 +64,14 @@ public class G {
         this.x = this.y = Main.Bound / 2.0;
         this.screenX = this.screenY = 0.0;
         this.viewX = this.viewY = 0.0;
+        this.maxHealth = this.health = this.showHealth = STANDARD_HEALTH;
+        this.naturalRegeneration = STANDARD_NATURAL_REGENERATION;
         this.radius = STANDARD_RADIUS;
         this.size = radius;
+        this.angry = false;
         this.moveFactor = STANDARD_MOVE_FACTOR;
         this.moveClock = new NanoTimerClock(moveFactor);
+        this.naturalRegenerationClock = new MilliTimerClock(1000);
         this.flashStateClock = new MilliTimerClock(moveFactor / 1000000 * 20);
         this.updateClock = new MilliTimerClock(10);
         this.keySets = new HashSet<>();
@@ -85,14 +97,14 @@ public class G {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                G.this.mouseX = e.getX() * 8 / 10;
-                G.this.mouseY = (e.getY() - Main.frameInsets.top)  * 8 / 10;
+                G.this.mouseX = e.getX() * 8 / 10 - 5;
+                G.this.mouseY = (e.getY() - Main.frameInsets.top)  * 8 / 10 - 1;
             }
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                mouseX = e.getX() * 8 / 10;
-                mouseY = (e.getY() - Main.frameInsets.top) * 8 / 10;
+                mouseX = e.getX() * 8 / 10 - 5;
+                mouseY = (e.getY() - Main.frameInsets.top) * 8 / 10 - 1;
             }
         };
         this.mouseListener = new MouseListener() {
@@ -124,6 +136,9 @@ public class G {
         Main.frame.addKeyListener(keyListener);
         Main.frame.addMouseListener(mouseListener);
         Main.frame.addMouseMotionListener(mouseMotionListener);
+
+        this.UISets = new HashSet<>();
+        UISets.add(new StateUI());
     }
 
     public void update() {
@@ -155,10 +170,24 @@ public class G {
             } else {
                 this.size = (int) Math.max(radius, size - 0.01 * radius);
             }
+            if (naturalRegenerationClock.isReady()) {
+                if (health < maxHealth) {
+                    health += naturalRegeneration;
+                    if (health > maxHealth) {
+                        health = maxHealth;
+                    }
+                }
+            }
+            showHealth += (health - showHealth) * 0.05;
             if (!Main.interoperableSets.isEmpty()) {
                 for (Interoperable i : Main.interoperableSets) {
                     if  (i.isTriggered(this.x, this.y, this.radius)) {
                         i.interaction(this);
+                    }
+                    if (i.isChecked(this.mouseX,this.mouseY)) {
+                        i.active();
+                    } else {
+                        i.disActive();
                     }
                 }
             }
@@ -168,18 +197,13 @@ public class G {
                         b.clock = new MilliTimerClock(b.duration, System.currentTimeMillis());
                         b.isActive = true;
                         b.giveBuff(this);
-                        if (Main.DEVELOPMENT_MODE) {
-                            System.out.println("Buff " + b.name + " is triggered");
-                        }
                     } else if (b.isOver()) {
                         b.finish(this);
-                        if (Main.DEVELOPMENT_MODE) {
-                            System.out.println("Buff " + b.name + " is over");
-                        }
                     }
                 }
                 buffs.removeIf(Buff::isOver);
             }
+            UISets.removeIf(UI::needDel);
         }
 
     }
@@ -198,38 +222,26 @@ public class G {
     }
 
     public void flashState() {
-        if (state == 5) state = 0;
-        else state++;
-    }
-
-    public void paint(Graphics2D g) {
-        if (ImageData.GImages.isEmpty()) return;
-        g.drawImage(ImageData.GImages.get(state), (int) (this.screenX - size), (int) (this.screenY - size), size * 2, size * 2, null);
-
-        if (Main.DEVELOPMENT_MODE) {
-            g.setColor(Color.GREEN);
-            g.fillRect(PosUtil.getScreenX(100), PosUtil.getScreenY(100), 60, 30);
-
-            g.setColor(Color.blue);
-            g.drawOval((int) (Math.round(this.screenX) - radius), (int) (Math.round(this.screenY) - radius), radius * 2, radius * 2);
-
-            g.setFont(FontUtil.getFont(20));
-            g.setColor(Color.red);
-            g.drawString("x:" + this.x + " y:" + this.y, 10, 30);
-            g.drawString("viewX:" + this.viewX + " viewY:" + this.viewY, 10, 50);
-            g.drawString("screenX:" + this.screenX + " screenY:" + this.screenY, 10, 70);
-            g.drawString("moveFactor:" + this.moveFactor, 10, 90);
-            g.drawString("size:" + this.size + " radius:" + this.radius, 10, 110);
-
-            g.fillOval(this.mouseX - 5, this.mouseY - 5,10,10);
+        if (angry) {
+            if (state >= 11) state = 6;
+            else state++;
+        } else {
+            if (state >= 5) state = 0;
+            else state++;
         }
     }
 
-    public String getName() {
-        return name;
-    }
+    public void paint(Graphics2D g) {
 
-    public int getRadius() {
-        return radius;
+        if (ImageData.GImages.isEmpty()) return;
+        g.drawImage(ImageData.GImages.get(state), (int) (this.screenX - size), (int) (this.screenY - size), size * 2, size * 2, null);
+
+        for (UI u : UISets) {
+            u.paint(g);
+        }
+
+        if (Main.DEVELOPMENT_MODE) {
+
+        }
     }
 }

@@ -1,8 +1,7 @@
 package com.big_g.main;
 
 import com.big_g.main.clock.NanoTimerClock;
-import com.big_g.main.element.BuffGetter;
-import com.big_g.main.element.WallLine;
+import com.big_g.main.element.*;
 import com.big_g.main.interfaces.Element;
 import com.big_g.main.interfaces.Interoperable;
 import com.big_g.main.objects.G;
@@ -84,21 +83,17 @@ public class Main {
         height = (frame.getHeight() - frameInsets.top) * 8 / 10;
 
         G.update();
+
         elements.removeIf(Element::needDel);
         interoperableSets.removeIf(Interoperable::needDel);
     }
 
     public static void paint(Graphics2D g) {
-        G.paint(g);
 
-
-        Stroke s = g.getStroke();
-
-        g.setStroke(new BasicStroke(5));
         for (Element element : elements) {
             element.paint(g);
         }
 
-        g.setStroke(s);
+        G.paint(g);
     }
 }
