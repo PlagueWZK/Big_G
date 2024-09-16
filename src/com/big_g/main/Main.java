@@ -1,7 +1,8 @@
 package com.big_g.main;
 
 import com.big_g.main.clock.NanoTimerClock;
-import com.big_g.main.element.*;
+import com.big_g.main.element.BuffGetter;
+import com.big_g.main.element.WallLine;
 import com.big_g.main.interfaces.Element;
 import com.big_g.main.interfaces.Interoperable;
 import com.big_g.main.objects.G;
@@ -10,6 +11,7 @@ import com.big_g.main.static_value.ImageData;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 
 /**
@@ -82,17 +84,22 @@ public class Main {
         width = frame.getWidth() * 8 / 10;
         height = (frame.getHeight() - frameInsets.top) * 8 / 10;
 
+        for (Element element : elements) {
+            element.update();
+        }
         G.update();
-
         elements.removeIf(Element::needDel);
         interoperableSets.removeIf(Interoperable::needDel);
     }
 
     public static void paint(Graphics2D g) {
 
-        for (Element element : elements) {
-            element.paint(g);
-        }
+        try{
+            for (Element element : elements) {
+                element.paint(g);
+            }
+        } catch (ConcurrentModificationException ignored){}
+
 
         G.paint(g);
     }

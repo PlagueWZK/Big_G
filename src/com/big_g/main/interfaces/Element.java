@@ -11,5 +11,6 @@ import java.awt.*;
 public interface Element {
 
     void paint(Graphics2D g);
+    void update();
     boolean needDel();
 }

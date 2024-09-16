@@ -5,6 +5,7 @@ import com.big_g.main.UI.StateUI;
 import com.big_g.main.buff.Buff;
 import com.big_g.main.clock.MilliTimerClock;
 import com.big_g.main.clock.NanoTimerClock;
+import com.big_g.main.element.Bullet;
 import com.big_g.main.element.WallLine;
 import com.big_g.main.interfaces.Interoperable;
 import com.big_g.main.interfaces.UI;
@@ -12,6 +13,7 @@ import com.big_g.main.static_value.ImageData;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 
 /**
@@ -26,6 +28,7 @@ public class G {
     public static final int STANDARD_RADIUS = 30;
     public static final double STANDARD_HEALTH = 100.0;
     public static final double STANDARD_NATURAL_REGENERATION = 2.0;
+    public static final int STANDARD_ATTACK_FACTOR = 100;
 
     public String name;
     public double x;
@@ -41,6 +44,7 @@ public class G {
     public double showHealth;
     public double naturalRegeneration;
     public double health;
+    public int attackFactor;
     public int radius;
     public int size;
     public long moveFactor;
@@ -50,10 +54,12 @@ public class G {
     public MilliTimerClock flashStateClock;
     public MilliTimerClock updateClock;
     public MilliTimerClock naturalRegenerationClock;
+    public MilliTimerClock attackClock;
     public HashSet<Integer> keySets;
     public HashSet<Integer> mouseSets;
     public HashSet<Buff> buffs;
     public HashSet<UI> UISets;
+    public HashSet<Bullet> bullets;
 
     public KeyListener keyListener;
     public MouseListener mouseListener;
@@ -66,6 +72,7 @@ public class G {
         this.viewX = this.viewY = 0.0;
         this.maxHealth = this.health = this.showHealth = STANDARD_HEALTH;
         this.naturalRegeneration = STANDARD_NATURAL_REGENERATION;
+        this.attackFactor = STANDARD_ATTACK_FACTOR;
         this.radius = STANDARD_RADIUS;
         this.size = radius;
         this.angry = false;
@@ -74,9 +81,11 @@ public class G {
         this.naturalRegenerationClock = new MilliTimerClock(1000);
         this.flashStateClock = new MilliTimerClock(moveFactor / 1000000 * 20);
         this.updateClock = new MilliTimerClock(10);
+        this.attackClock = new MilliTimerClock(attackFactor);
         this.keySets = new HashSet<>();
         this.mouseSets = new HashSet<>();
         this.buffs = new HashSet<>();
+        this.bullets = new HashSet<>();
         this.keyListener = new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -98,7 +107,7 @@ public class G {
             @Override
             public void mouseDragged(MouseEvent e) {
                 G.this.mouseX = e.getX() * 8 / 10 - 5;
-                G.this.mouseY = (e.getY() - Main.frameInsets.top)  * 8 / 10 - 1;
+                G.this.mouseY = (e.getY() - Main.frameInsets.top) * 8 / 10 - 1;
             }
 
             @Override
@@ -170,6 +179,13 @@ public class G {
             } else {
                 this.size = (int) Math.max(radius, size - 0.01 * radius);
             }
+
+            attackClock.setCooldown(attackFactor);
+            if (this.mouseSets.contains(MouseEvent.BUTTON1)) {
+                if (attackClock.isReady()) {
+                    bullets.add(new Bullet(this.x, this.y, mouseX, mouseY, this.radius / 8, moveFactor / 10, 1));
+                }
+            }
             if (naturalRegenerationClock.isReady()) {
                 if (health < maxHealth) {
                     health += naturalRegeneration;
@@ -181,10 +197,10 @@ public class G {
             showHealth += (health - showHealth) * 0.05;
             if (!Main.interoperableSets.isEmpty()) {
                 for (Interoperable i : Main.interoperableSets) {
-                    if  (i.isTriggered(this.x, this.y, this.radius)) {
+                    if (i.isTriggered(this.x, this.y, this.radius)) {
                         i.interaction(this);
                     }
-                    if (i.isChecked(this.mouseX,this.mouseY)) {
+                    if (i.isChecked(this.mouseX, this.mouseY)) {
                         i.active();
                     } else {
                         i.disActive();
@@ -237,11 +253,14 @@ public class G {
         g.drawImage(ImageData.GImages.get(state), (int) (this.screenX - size), (int) (this.screenY - size), size * 2, size * 2, null);
 
         for (UI u : UISets) {
-            u.paint(g);
-        }
+            try {
+                u.paint(g);
+            } catch (ConcurrentModificationException ignored) {
 
-        if (Main.DEVELOPMENT_MODE) {
+            }
 
+            if (Main.DEVELOPMENT_MODE) {
+            }
         }
     }
 }

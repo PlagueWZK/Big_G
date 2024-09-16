@@ -70,6 +70,11 @@ public class WallLine implements Element {
 
     }
 
+    @Override
+    public void update() {
+
+    }
+
     public static void init() {
         int[][] wall = new int[][]{
                 {200, 200, 800, 200},

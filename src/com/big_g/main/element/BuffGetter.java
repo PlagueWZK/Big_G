@@ -53,6 +53,10 @@ public class BuffGetter extends BasicInteroperable implements Element {
                 g.setColor(Color.cyan);
                 g.setFont(FontUtil.getFont(16));
                 g.drawString(buff.description, 12, Main.height * 17 / 18);
+
+                if (Main.DEVELOPMENT_MODE) {
+                    g.drawString(String.valueOf(buff.description.length()), 100, Main.height * 13 / 15);
+                }
             }
         };
         Main.elements.add(this);
@@ -65,8 +69,8 @@ public class BuffGetter extends BasicInteroperable implements Element {
     }
 
     @Override
-    public boolean isCollision(double x, double y, int r) {
-        return false;
+    public void update() {
+
     }
 
     public static void init() {
@@ -80,6 +84,7 @@ public class BuffGetter extends BasicInteroperable implements Element {
     public void interaction(G G) {
         G.buffs.add(buff);
         deFunction = true;
+        info.isShowing = false;
     }
 
     @Override
@@ -98,7 +103,7 @@ public class BuffGetter extends BasicInteroperable implements Element {
     }
 
     public void active() {
-        if (!info.isShowing) {
+        if (!info.isShowing && !deFunction) {
             Main.G.UISets.add(info);
             info.isShowing = true;
         }
