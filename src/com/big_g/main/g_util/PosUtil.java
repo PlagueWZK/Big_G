@@ -18,4 +18,13 @@ public abstract class PosUtil {
     public static double getDistance(double x1,double y1,double x2,double y2) {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
+
+    public static double getDx(double x1,double y1,double x2,double y2) {
+        double length = getDistance(x1, y1, x2, y2);
+        return (x2 - x1) / length;
+    }
+    public static double getDy(double x1,double y1,double x2,double y2) {
+        double length = getDistance(x1, y1, x2, y2);
+        return (y2 - y1) / length;
+    }
 }

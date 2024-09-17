@@ -24,7 +24,7 @@ public class MainPanel extends JPanel{
 
     public void init() {
         this.setBackground(Color.GRAY);
-        paintClock = new MilliTimerClock(1);
+        paintClock = new MilliTimerClock(1L);
     }
 
     @Override

@@ -21,7 +21,6 @@ public class WallLine implements Element {
     public double x2;
     public double y2;
     public double length;
-    public double angle;
     public double A;
     public double B;
     public double C;
@@ -75,17 +74,4 @@ public class WallLine implements Element {
 
     }
 
-    public static void init() {
-        int[][] wall = new int[][]{
-                {200, 200, 800, 200},
-                {200, 200, 200, 700},
-                {200, 700, 800, 700},
-                {800, 700, 800, 500},
-                {800, 200, 800, 400}
-        };
-        for (int[] w : wall) {
-            new WallLine(w[0], w[1], w[2], w[3]);
-        }
-        new WallLine(200, 200, 200, -100, Color.RED);
-    }
 }

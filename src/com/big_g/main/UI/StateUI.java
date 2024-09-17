@@ -15,7 +15,6 @@ import java.awt.*;
 public class StateUI extends UI {
     @Override
     public void paint(Graphics2D g) {
-        System.out.print("\r" + Main.G.showHealth);
         g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g.setColor(new Color((int) (200 - (200 * Main.G.showHealth / Main.G.maxHealth)), (int) (255 * Main.G.showHealth / Main.G.maxHealth), (int) (255 * Main.G.health / Main.G.maxHealth)));
         g.fillRect(10, 30, 200, 50);

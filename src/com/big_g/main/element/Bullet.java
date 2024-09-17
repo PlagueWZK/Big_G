@@ -28,9 +28,8 @@ public class Bullet implements Element {
     public double dy;
     public long speed;
 
-    public int damage;
+    public double damage;
 
-    public float show;
 
     public boolean alive;
 
@@ -39,7 +38,7 @@ public class Bullet implements Element {
     public Color color;
 
 
-    public Bullet(double x, double y, double dx, double dy, int r, long speed, int damage) {
+    public Bullet(double x, double y, double dx, double dy, int r, long speed, double damage,int offset) {
         this.x = this.moveX = x;
         this.y = this.moveY = y;
         this.showX = PosUtil.getScreenX(x);
@@ -47,13 +46,14 @@ public class Bullet implements Element {
         this.r = r;
         this.speed = speed;
         this.damage = damage;
-        this.color = new Color((int) Math.round(damage * 2.5), 0, 0, 255);
+        this.color = new Color((int)(damage * 2.5), (int)(255 - damage * 2.5), 0, 255);
         double distance = PosUtil.getDistance(showX, showY, dx, dy);
-        this.dx = (dx - showX) / distance;
-        this.dy = (dy - showY) / distance;
-        System.out.println("showX: " + showX + "   showY: " + showY);
-        System.out.println("dx: " + this.dx + "  dy:" + this.dy);
-        this.show = 1f;
+
+        dx = (dx - showX) / distance;
+        dy = (dy - showY) / distance;
+        double radians = Math.toRadians(Main.random.nextDouble(-offset,offset)) ;
+        this.dx = dx * Math.cos(radians) - dy * Math.sin(radians);
+        this.dy = dy * Math.cos(radians) + dx * Math.sin(radians);
         this.bulletMoveClock = new NanoTimerClock(speed);
         this.updateClock = new MilliTimerClock(10);
         this.alive = true;
@@ -82,7 +82,6 @@ public class Bullet implements Element {
             if (bulletMoveClock.isReady()) {
                 x += dx;
                 y += dy;
-                show *= 0.9f;
 
             }
             if (updateClock.isReady()) {
@@ -92,13 +91,19 @@ public class Bullet implements Element {
                 showY = PosUtil.getScreenY(moveY);
                 dx *= 0.97;
                 dy *= 0.97;
+                damage *= 0.987;
+                this.color = new Color((int)(damage * 2.5), (int)(255 - damage * 2.5), 0, (int)(Math.max(200 * Math.abs(dx), 200 * Math.abs(dy))));
             }
         }
     }
 
     @Override
     public boolean needDel() {
-        return Math.abs(dx * 1000000000 / speed) <= 2 && Math.abs(dy * 1000000000 / speed) <= 2;
+        if (Math.abs(dx * 1000000000 / speed) <= 2 && Math.abs(dy * 1000000000 / speed) <= 2) {
+            alive = false;
+            return true;
+        }
+        return false;
     }
 }
 

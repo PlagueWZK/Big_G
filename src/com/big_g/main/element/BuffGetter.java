@@ -2,10 +2,11 @@ package com.big_g.main.element;
 
 import com.big_g.main.Main;
 import com.big_g.main.UI.Info;
-import com.big_g.main.buff.*;
+import com.big_g.main.buff.Buff;
 import com.big_g.main.g_util.FontUtil;
 import com.big_g.main.g_util.PosUtil;
 import com.big_g.main.interfaces.Element;
+import com.big_g.main.interfaces.Interoperable;
 import com.big_g.main.objects.G;
 import com.big_g.main.static_value.ImageData;
 
@@ -17,17 +18,22 @@ import java.awt.*;
  * date: 2024/9/14 17:00
  */
 
-public class BuffGetter extends BasicInteroperable implements Element {
+public class BuffGetter implements Element, Interoperable {
 
     public static final Color C = new Color(47, 43, 43);
 
+    public double x;
+    public double y;
+    public int radius;
     public Buff buff;
     private boolean deFunction;
     public static final int RADIUS = 15;
     public Info info;
 
     public BuffGetter(double x, double y, Buff buff) {
-        super(x, y, RADIUS);
+        this.x = x;
+        this.y = y;
+        this.radius = RADIUS;
         this.buff = buff;
         this.deFunction = false;
         info = new Info() {
@@ -73,18 +79,17 @@ public class BuffGetter extends BasicInteroperable implements Element {
 
     }
 
-    public static void init() {
-        new BuffGetter(500, 600, new SpeedUp(20000, 2));
-        new BuffGetter(300, 300, new Angry(10000, 5));
-        new BuffGetter(700, 100, new Poison(20000, 10));
-        new BuffGetter(200, 1000, new Grow(20000, 10));
-    }
 
     @Override
     public void interaction(G G) {
         G.buffs.add(buff);
         deFunction = true;
         info.isShowing = false;
+    }
+
+    @Override
+    public void disInteraction(G G) {
+
     }
 
     @Override

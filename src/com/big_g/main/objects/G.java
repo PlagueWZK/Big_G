@@ -28,7 +28,9 @@ public class G {
     public static final int STANDARD_RADIUS = 30;
     public static final double STANDARD_HEALTH = 100.0;
     public static final double STANDARD_NATURAL_REGENERATION = 2.0;
-    public static final int STANDARD_ATTACK_FACTOR = 100;
+    public static final int STANDARD_ATTACK_FACTOR = 10;
+    public static final double STANDARD_ATTACK_VALUE = 1.0;
+    public static final int STANDARD_DIFFUSION_RADIUS = 10;
 
     public String name;
     public double x;
@@ -49,6 +51,8 @@ public class G {
     public int size;
     public long moveFactor;
     public boolean angry;
+    public double attackValue;
+    public int diffusionRadius;
 
     public NanoTimerClock moveClock;
     public MilliTimerClock flashStateClock;
@@ -76,7 +80,9 @@ public class G {
         this.radius = STANDARD_RADIUS;
         this.size = radius;
         this.angry = false;
+        this.attackValue = STANDARD_ATTACK_VALUE;
         this.moveFactor = STANDARD_MOVE_FACTOR;
+        this.diffusionRadius = STANDARD_DIFFUSION_RADIUS;
         this.moveClock = new NanoTimerClock(moveFactor);
         this.naturalRegenerationClock = new MilliTimerClock(1000);
         this.flashStateClock = new MilliTimerClock(moveFactor / 1000000 * 20);
@@ -183,7 +189,9 @@ public class G {
             attackClock.setCooldown(attackFactor);
             if (this.mouseSets.contains(MouseEvent.BUTTON1)) {
                 if (attackClock.isReady()) {
-                    bullets.add(new Bullet(this.x, this.y, mouseX, mouseY, this.radius / 8, moveFactor / 10, 1));
+                    for (int i = 0; i < 3; i++) {
+                        bullets.add(new Bullet(this.x, this.y, mouseX, mouseY, this.radius / 3, moveFactor / 10, attackValue,diffusionRadius));
+                    }
                 }
             }
             if (naturalRegenerationClock.isReady()) {
@@ -199,6 +207,8 @@ public class G {
                 for (Interoperable i : Main.interoperableSets) {
                     if (i.isTriggered(this.x, this.y, this.radius)) {
                         i.interaction(this);
+                    } else {
+                        i.disInteraction(this);
                     }
                     if (i.isChecked(this.mouseX, this.mouseY)) {
                         i.active();

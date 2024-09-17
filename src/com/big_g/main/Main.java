@@ -1,8 +1,7 @@
 package com.big_g.main;
 
 import com.big_g.main.clock.NanoTimerClock;
-import com.big_g.main.element.BuffGetter;
-import com.big_g.main.element.WallLine;
+import com.big_g.main.data.GameData;
 import com.big_g.main.interfaces.Element;
 import com.big_g.main.interfaces.Interoperable;
 import com.big_g.main.objects.G;
@@ -13,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * @author PlagueWZK
@@ -35,6 +35,7 @@ public class Main {
     public static MainPanel mainPanel;
     public static NanoTimerClock runClock;
     public static G G;
+    public static Random random;
 
     public static HashSet<Interoperable> interoperableSets;
     public static HashSet<Element> elements;
@@ -68,14 +69,15 @@ public class Main {
         runClock = new NanoTimerClock(FREQUENCY);
         mainPanel = new MainPanel();
         G = new G("G");
+        random = new Random();
 
         frame.add(mainPanel);
 
         interoperableSets = new HashSet<>();
         elements = new HashSet<>();
         ImageData.init();
-        WallLine.init();
-        BuffGetter.init();
+
+        GameData.initLevel(1);
 
     }
 
