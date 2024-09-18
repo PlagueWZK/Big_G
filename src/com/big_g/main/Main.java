@@ -22,7 +22,7 @@ import java.util.Random;
 
 public class Main {
     public static final int Bound = 1000;
-    public static final boolean DEVELOPMENT_MODE = true;
+    public static final boolean DEVELOPMENT_MODE = false;
     public static final long FREQUENCY = 10000;
 
 

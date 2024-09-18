@@ -270,6 +270,8 @@ public class G {
             }
 
             if (Main.DEVELOPMENT_MODE) {
+                g.setColor(Color.BLUE);
+                g.drawOval((int) (this.screenX - radius), (int) (this.screenY - radius), radius * 2, radius * 2);
             }
         }
     }

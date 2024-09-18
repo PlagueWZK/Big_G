@@ -5,6 +5,7 @@ import com.big_g.main.clock.MilliTimerClock;
 import com.big_g.main.clock.NanoTimerClock;
 import com.big_g.main.g_util.PosUtil;
 import com.big_g.main.interfaces.Element;
+import com.big_g.main.objects.Enemy;
 
 import java.awt.*;
 
@@ -67,11 +68,8 @@ public class Bullet implements Element {
         g.fillRect(showX - r, showY - r, r * 2, r * 2);
 
         if (Main.DEVELOPMENT_MODE) {
-//            g.drawString("showX: " + this.showX + "   showY: " + this.showY, (int) showX, (int) (showY - 20));
-//            g.drawString("x: " + this.x + "   y: " + this.y, (int) showX, (int) (showY - 30));
-//            g.drawString("dx: " + this.dx + "   dy: " + this.dy, (int) showX, (int) (showY - 40));
-//            g.drawString("damage: " + this.damage, (int) showX, (int) (showY - 50));
-//            g.drawString("show: " + this.show, (int) showX, (int) (showY - 60));
+//            g.setColor(Color.RED);
+//            g.drawOval(PosUtil.getScreenX(x), PosUtil.getScreenY(y), r * 2, r * 2);
 
         }
     }
@@ -80,30 +78,48 @@ public class Bullet implements Element {
     public void update() {
         if (alive) {
             if (bulletMoveClock.isReady()) {
+                for (WallLine w : WallLine.wallLines) {
+                    if (w.isCollision(x, y, r)) return;
+                }
                 x += dx;
                 y += dy;
-
             }
             if (updateClock.isReady()) {
-                moveX += (this.x - moveX) * 0.02;
-                moveY += (this.y - moveY) * 0.02;
+                if (Math.abs(dx * 1000000000 / speed) <= 2 && Math.abs(dy * 1000000000 / speed) <= 2) {
+                    alive = false;
+                }
+                moveX += (this.x - moveX) * 0.4;
+                moveY += (this.y - moveY) * 0.4;
                 showX = PosUtil.getScreenX(moveX);
                 showY = PosUtil.getScreenY(moveY);
                 dx *= 0.97;
                 dy *= 0.97;
                 damage *= 0.987;
                 this.color = new Color((int)(damage * 2.5), (int)(255 - damage * 2.5), 0, (int)(Math.max(200 * Math.abs(dx), 200 * Math.abs(dy))));
+
+                for (Enemy e : Enemy.enemies) {
+                    if (e.aLive && PosUtil.getDistance(x, y, e.x, e.y) < e.radius) {
+                        e.health -= damage;
+                        alive = false;
+                        return;
+                    }
+                }
             }
         }
     }
 
     @Override
     public boolean needDel() {
-        if (Math.abs(dx * 1000000000 / speed) <= 2 && Math.abs(dy * 1000000000 / speed) <= 2) {
-            alive = false;
-            return true;
-        }
-        return false;
+        return !alive;
+    }
+    @Override
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    @Override
+    public void setY(double y) {
+        this.y = y;
     }
 }
 

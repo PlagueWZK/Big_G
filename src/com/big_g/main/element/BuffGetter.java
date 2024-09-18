@@ -66,6 +66,7 @@ public class BuffGetter implements Element, Interoperable {
             }
         };
         Main.elements.add(this);
+        Main.interoperableSets.add(this);
     }
 
 
@@ -95,6 +96,16 @@ public class BuffGetter implements Element, Interoperable {
     @Override
     public boolean needDel() {
         return deFunction;
+    }
+
+    @Override
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    @Override
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override

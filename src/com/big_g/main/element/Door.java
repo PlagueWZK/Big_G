@@ -5,6 +5,7 @@ import com.big_g.main.clock.MilliTimerClock;
 import com.big_g.main.g_util.PosUtil;
 import com.big_g.main.interfaces.Element;
 import com.big_g.main.interfaces.Interoperable;
+import com.big_g.main.objects.Enemy;
 import com.big_g.main.objects.G;
 
 import java.awt.*;
@@ -48,6 +49,7 @@ public class Door extends WallLine implements Element, Interoperable {
     @Override
     public void update() {
         if (updateClock.isReady()) {
+            canPass = Enemy.enemies.size() <= 1;
             if (canPass) {
                 color = new Color(119, 232, 97, alpha);
             } else {

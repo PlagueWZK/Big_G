@@ -17,10 +17,12 @@ public class Angry extends Buff{
     @Override
     public void giveBuff(G g) {
         g.angry = true;
+        g.attackValue *= power;
     }
 
     @Override
     public void finish(G g) {
         g.angry = false;
+        g.attackValue /= power;
     }
 }

@@ -74,4 +74,11 @@ public class WallLine implements Element {
 
     }
 
+    @Override
+    public void setX(double x) {
+    }
+
+    @Override
+    public void setY(double y) {
+    }
 }

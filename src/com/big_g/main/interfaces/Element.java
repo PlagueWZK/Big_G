@@ -13,4 +13,7 @@ public interface Element {
     void paint(Graphics2D g);
     void update();
     boolean needDel();
+
+    void setX(double x);
+    void setY(double y);
 }
